@@ -2,7 +2,7 @@
 #define PID_H
 
 #include <ctime>
-#include <krb5.h>
+// #include <krb5.h>
 
 class PID {
 public:
@@ -23,8 +23,9 @@ public:
   // extra goodies
 
   double cte_old;
-  double dt;
+  double delta_time;
   double delta_cte;
+  double sum_cte;
   bool firstIteration;
 
   std::clock_t time;

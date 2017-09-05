@@ -36,7 +36,28 @@ int main()
   // TODO: Initialize the pid variable.
   
   // start
-  pid.Init(0.30, 0.3, 0.04);
+  // pid.Init(2.9, 10.3, 0.5); //from class, just a start
+  // result: NOPE!!! turns too strongly
+
+  // turning angle is too strong, need to tone down the first term significantly
+  // pid.Init(0.3, 10.3, 0.5); 
+  // result, no real difference, I think the second term (p) over-over componsates now
+
+  // pid.Init(0.3, 1.0, 0.5);
+  //result: better
+
+  // pid.Init(0.3, .1, 0.5);
+  // now it's making me seasick
+
+  // pid.Init(0.3, .001, 0.5);
+  // result: I'm doing something wrong - it flips between the two extremes, need to change the I term as well
+
+  // pid.Init(0.3, .001, 0.05);
+  // much better
+  //pid.Init(0.3, .001, 0.015);
+  // still too jerky
+
+  pid.Init(0.03, .0005, 0.015); // this works well enough
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -63,8 +84,12 @@ int main()
           pid.UpdateError(cte);
           steer_value = pid.TotalError();
           // DEBUG
+          int c = 0;
+          c += 1;
+          if (c == 5) {
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
-
+          c = 0;
+          }
           json msgJson;
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = 0.3;

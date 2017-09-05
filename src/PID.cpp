@@ -11,9 +11,9 @@ PID::PID() {}
 PID::~PID() {}
 
 void PID::Init(double Kp, double Ki, double Kd) {
-	Kp = Kp;
-	Ki = Ki;
-	Ki = Ki;
+    this->Kp = Kp;
+    this->Ki = Ki;
+    this->Kd = Kd;
 	firstIteration = true;
 }
 
@@ -25,15 +25,15 @@ void PID::UpdateError(double cte) {
 	}
 
 	time = std::clock();
-	p_error = -Kp *cte
+	p_error = -Kp *cte;
 
 	delta_cte = cte - cte_old;
-	dt = (time- time_old)*1.0f/CLOCKS_PER_SEC;
+	delta_time = (time- time_old)*1.0f/CLOCKS_PER_SEC;
 
-	if (dt < 0.00001) {
+	if (delta_time < 0.00001) {
         d_error = 0;
     } else {
-        d_error = -Kd * delta_cte / dt;
+        d_error = -Kd * delta_cte / delta_time;
     }
 
     cte_old = cte;
