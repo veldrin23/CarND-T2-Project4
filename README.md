@@ -1,96 +1,75 @@
-# CarND-Controls-PID
-Self-Driving Car Engineer Nanodegree Program
+# CARND Term 2 
+# Project 4 - PID controller 
+
 
 ---
 
-## Dependencies
+## P, I and D
+### **P**roportional controller
+This is the first term I played with. In short, the P factor determines how sharp the vehicle turns. A higher value makes the vehicle turn faster. 
 
-* cmake >= 3.5
- * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools]((https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
-* [uWebSockets](https://github.com/uWebSockets/uWebSockets)
-  * Run either `./install-mac.sh` or `./install-ubuntu.sh`.
-  * If you install from source, checkout to commit `e94b6e1`, i.e.
-    ```
-    git clone https://github.com/uWebSockets/uWebSockets 
-    cd uWebSockets
-    git checkout e94b6e1
-    ```
-    Some function signatures have changed in v0.14.x. See [this PR](https://github.com/udacity/CarND-MPC-Project/pull/3) for more details.
-* Simulator. You can download these from the [project intro page](https://github.com/udacity/self-driving-car-sim/releases) in the classroom.
+Below is a video of a scenario where the P factor is too high.
 
-There's an experimental patch for windows in this [PR](https://github.com/udacity/CarND-PID-Control-Project/pull/3)
+You can see the vehicle's turn rate is excessive. 
+### **I**ntegral controller
+The Integral factor dampens the steering angle based on the cumulative error (cte). This includes the sum of positive and negative values, which means that pendulum-esque movements of the vehicle (as views from above) decreases this adjustment. 
 
-## Basic Build Instructions
+Below is a video of a scenario where the I factor is too high.
 
-1. Clone this repo.
-2. Make a build directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./pid`. 
 
-## Editor Settings
 
-We've purposefully kept editor configuration files out of this repo in order to
-keep it as simple and environment agnostic as possible. However, we recommend
-using the following settings:
+### **D**ifferential controller
+The differential controller aims to smooth out the steering angle based on the change in cte. As the vehicle gets closer the the ground truth (the cte value decreases), the steering angle will become less acute.
 
-* indent using spaces
-* set tab width to 2 spaces (keeps the matrices in source code aligned)
+Having a large D value will make the vehicle become too excited to get back on track, which will make it overshoot the ground truth mark.
 
-## Code Style
+## Tuning
+This was done manually, my C++ expertise was not on the level to dynamically tune the parameters on the fly. 
+The steps can also be found in the main.cpp script, but here was what I experienced:
 
-Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
+* I started with PID = [2.9, 10.3, 0.5], which was taken as is from the lessons. It was way too extreme, the vehichle took super sharp turns and couldn't 'stick' to the groud truth.
 
-## Project Instructions and Rubric
 
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
+[![1](https://img.youtube.com/vi/y3ozUZpePZ0/0.jpg)](https://youtu.be/y3ozUZpePZ0?t=1s)
 
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/e8235395-22dd-4b87-88e0-d108c5e5bbf4/concepts/6a4d8d42-6a04-4aa6-b284-1697c0fd6562)
-for instructions and the project rubric.
 
-## Hints!
+* After that I decreased the P factor to 0.3: [0.3, 10.3, 0.5]. This did not have the desired change. The vehicle still turned too sharply. 
 
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
 
-## Call for IDE Profiles Pull Requests
+[![2](https://img.youtube.com/vi/XtBnPXdcdjw/0.jpg)](https://youtu.be/XtBnPXdcdjw)
+ 
+ 
+* Next step was to decrease the I value so that the vehicle is less sensitive the the cumulative errors.  [0.3, 1.0, 0.5]
 
-Help your fellow students!
 
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
+[![3](https://img.youtube.com/vi/qyzyV2Bzhes/0.jpg)](https://youtu.be/qyzyV2Bzhes)
 
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
 
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
+* This kept the vehicle on the road at least, but the sporadic left/ right turning was not desired [0.3, 0.1, 0.5]
 
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
 
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
+[![4](https://img.youtube.com/vi/Eey-qAtxiig/0.jpg)](https://youtu.be/Eey-qAtxiig)
 
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+* Decreasing I even more: [0.3, .001, 0.5]
 
+
+[![5](https://img.youtube.com/vi/6DoT7PcBN2w/0.jpg)](https://youtu.be/6DoT7PcBN2w)
+
+
+* Did not have the desired effect, need to decreasse D [0.3, .001, 0.05]
+
+
+[![6](https://img.youtube.com/vi/5RgGFUqoiOM/0.jpg)](https://youtu.be/5RgGFUqoiOM)
+
+
+* Close, but still too jerky: [0.03, .0005, 0.015]
+
+
+[![7](https://img.youtube.com/vi/xLUXHcAMo4o/0.jpg)](https://youtu.be/xLUXHcAMo4o)
+
+
+* This works 
+
+  
+  
